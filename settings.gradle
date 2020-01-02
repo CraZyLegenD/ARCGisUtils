@@ -1,0 +1,2 @@
+include ':app', ':arcgisextensions'
+rootProject.name='ArcGisUtils'
