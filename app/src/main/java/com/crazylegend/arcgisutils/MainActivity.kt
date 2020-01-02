@@ -19,6 +19,8 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AbstractMapActivity(R.layout.activity_main) {
     override val mapView: MapView
         get() = mview
+    override val showBackButton: Boolean
+        get() = false
 
     private var startPoint: Point? = null
     private var endPoint: Point? = null
