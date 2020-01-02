@@ -1,5 +1,7 @@
 package com.crazylegend.arcgisextensions.abstracts
 
+import android.content.Context
+import android.content.res.Configuration
 import android.graphics.Point
 import android.os.Bundle
 import android.view.MenuItem
@@ -7,6 +9,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.crazylegend.arcgisextensions.addGraphicsOverlay
 import com.crazylegend.arcgisextensions.addOnTouchListener
 import com.crazylegend.kotlinextensions.context.showBackButton
+import com.crazylegend.kotlinextensions.locale.LocaleHelper
+import com.esri.arcgisruntime.internal.jni.it
 import com.esri.arcgisruntime.mapping.ArcGISMap
 import com.esri.arcgisruntime.mapping.view.GraphicsOverlay
 import com.esri.arcgisruntime.mapping.view.MapView
@@ -21,10 +25,8 @@ abstract class AbstractMapActivity(contentLayoutId: Int) : AppCompatActivity(con
     abstract val mapView: MapView
     var localMap: ArcGISMap? = null
     var graphicsOverlay: GraphicsOverlay? = null
-    abstract val showBackButton: Boolean
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (showBackButton) showBackButton()
 
         mapView.addOnTouchListener(this) { screenPoint, locationPoint ->
             handleMapTouch(screenPoint, locationPoint)
@@ -41,6 +43,19 @@ abstract class AbstractMapActivity(contentLayoutId: Int) : AppCompatActivity(con
     private fun createGraphicsOverlay() {
         graphicsOverlay = GraphicsOverlay()
         mapView.addGraphicsOverlay(graphicsOverlay)
+    }
+
+    override fun attachBaseContext(newBase: Context?) {
+        super.attachBaseContext(newBase?.let { LocaleHelper.onAttach(it) })
+    }
+
+    override fun applyOverrideConfiguration(overrideConfiguration: Configuration?) {
+        if (overrideConfiguration != null) {
+            val uiMode = overrideConfiguration.uiMode
+            overrideConfiguration.setTo(baseContext.resources.configuration)
+            overrideConfiguration.uiMode = uiMode
+        }
+        super.applyOverrideConfiguration(overrideConfiguration)
     }
 
 
