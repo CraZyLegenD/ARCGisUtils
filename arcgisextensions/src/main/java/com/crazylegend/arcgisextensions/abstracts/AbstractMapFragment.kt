@@ -6,8 +6,10 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import com.crazylegend.arcgisextensions.addGraphicsOverlay
 import com.crazylegend.arcgisextensions.addOnTouchListener
+import com.crazylegend.arcgisextensions.checkLocationPermission
 import com.esri.arcgisruntime.mapping.ArcGISMap
 import com.esri.arcgisruntime.mapping.view.GraphicsOverlay
+import com.esri.arcgisruntime.mapping.view.LocationDisplay
 import com.esri.arcgisruntime.mapping.view.MapView
 
 
@@ -18,6 +20,7 @@ abstract class AbstractMapFragment(contentLayoutId: Int) : Fragment(contentLayou
 
     abstract val mapView: MapView
     var localMap: ArcGISMap? = null
+    var locationDisplay: LocationDisplay? = null
     var graphicsOverlay: GraphicsOverlay? = null
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -26,6 +29,21 @@ abstract class AbstractMapFragment(contentLayoutId: Int) : Fragment(contentLayou
         }
         loadMapPackage()
         createGraphicsOverlay()
+    }
+
+    fun setupLocationDisplay(requestCode: Int = 131, onPermissionGranted: () -> Unit = {},
+                             onPermissionDenied: () -> Unit = {},
+                             onShowRationale: () -> Unit = {},
+                             onPermissionDeniedPermanently: () -> Unit = {}) {
+        locationDisplay = mapView.locationDisplay
+        locationDisplay?.addDataSourceStatusChangedListener { dataSourceStatusChangedEvent ->
+            if (dataSourceStatusChangedEvent.isStarted || dataSourceStatusChangedEvent.error == null) {
+                return@addDataSourceStatusChangedListener
+            }
+            checkLocationPermission(requestCode, onPermissionGranted, onPermissionDenied, onShowRationale, onPermissionDeniedPermanently)
+        }
+        locationDisplay?.autoPanMode = LocationDisplay.AutoPanMode.COMPASS_NAVIGATION
+        locationDisplay?.startAsync()
     }
 
     abstract fun loadMapPackage()
@@ -48,8 +66,8 @@ abstract class AbstractMapFragment(contentLayoutId: Int) : Fragment(contentLayou
         mapView.pause()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         mapView.dispose()
     }
 

@@ -8,11 +8,13 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.crazylegend.arcgisextensions.addGraphicsOverlay
 import com.crazylegend.arcgisextensions.addOnTouchListener
+import com.crazylegend.arcgisextensions.checkLocationPermission
 import com.crazylegend.kotlinextensions.context.showBackButton
 import com.crazylegend.kotlinextensions.locale.LocaleHelper
 import com.esri.arcgisruntime.internal.jni.it
 import com.esri.arcgisruntime.mapping.ArcGISMap
 import com.esri.arcgisruntime.mapping.view.GraphicsOverlay
+import com.esri.arcgisruntime.mapping.view.LocationDisplay
 import com.esri.arcgisruntime.mapping.view.MapView
 
 
@@ -25,6 +27,8 @@ abstract class AbstractMapActivity(contentLayoutId: Int) : AppCompatActivity(con
     abstract val mapView: MapView
     var localMap: ArcGISMap? = null
     var graphicsOverlay: GraphicsOverlay? = null
+    var locationDisplay: LocationDisplay? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -32,9 +36,24 @@ abstract class AbstractMapActivity(contentLayoutId: Int) : AppCompatActivity(con
             handleMapTouch(screenPoint, locationPoint)
         }
         loadMapPackage()
-
         createGraphicsOverlay()
     }
+
+    fun setupLocationDisplay(requestCode: Int = 131, onPermissionGranted: () -> Unit = {},
+                             onPermissionDenied: () -> Unit = {},
+                             onShowRationale: () -> Unit = {},
+                             onPermissionDeniedPermanently: () -> Unit = {}) {
+        locationDisplay = mapView.locationDisplay
+        locationDisplay?.addDataSourceStatusChangedListener { dataSourceStatusChangedEvent ->
+            if (dataSourceStatusChangedEvent.isStarted || dataSourceStatusChangedEvent.error == null) {
+                return@addDataSourceStatusChangedListener
+            }
+            checkLocationPermission(requestCode, onPermissionGranted, onPermissionDenied, onShowRationale, onPermissionDeniedPermanently)
+        }
+        locationDisplay?.autoPanMode = LocationDisplay.AutoPanMode.COMPASS_NAVIGATION
+        locationDisplay?.startAsync()
+    }
+
 
     abstract fun loadMapPackage()
 
