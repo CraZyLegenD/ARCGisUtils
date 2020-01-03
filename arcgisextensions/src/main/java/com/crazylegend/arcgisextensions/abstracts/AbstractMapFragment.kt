@@ -18,7 +18,7 @@ import com.esri.arcgisruntime.mapping.view.MapView
  */
 abstract class AbstractMapFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
 
-    abstract val mapView: MapView
+    abstract val mapView: MapView?
     var localMap: ArcGISMap? = null
     var locationDisplay: LocationDisplay? = null
     var graphicsOverlay: GraphicsOverlay? = null
@@ -35,7 +35,7 @@ abstract class AbstractMapFragment(contentLayoutId: Int) : Fragment(contentLayou
                              onPermissionDenied: () -> Unit = {},
                              onShowRationale: () -> Unit = {},
                              onPermissionDeniedPermanently: () -> Unit = {}) {
-        locationDisplay = mapView.locationDisplay
+        locationDisplay = mapView?.locationDisplay
         locationDisplay?.addDataSourceStatusChangedListener { dataSourceStatusChangedEvent ->
             if (dataSourceStatusChangedEvent.isStarted || dataSourceStatusChangedEvent.error == null) {
                 return@addDataSourceStatusChangedListener
@@ -58,17 +58,17 @@ abstract class AbstractMapFragment(contentLayoutId: Int) : Fragment(contentLayou
 
     override fun onResume() {
         super.onResume()
-        mapView.resume()
+        mapView?.resume()
     }
 
     override fun onPause() {
         super.onPause()
-        mapView.pause()
+        mapView?.pause()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        mapView.dispose()
+        mapView?.dispose()
     }
 
 }
