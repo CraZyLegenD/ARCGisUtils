@@ -51,6 +51,9 @@ class MainActivity : AbstractMapActivity(R.layout.activity_main) {
         }
     }
 
+
+
+
     private fun setMapMarker(location: Point, style: SimpleMarkerSymbol.Style, markerColor: Int, outlineColor: Int) {
         setMapMarker(8.0f, 2.0f, SimpleLineSymbol.Style.SOLID,
                 location, style, markerColor, outlineColor, graphicsOverlay)
