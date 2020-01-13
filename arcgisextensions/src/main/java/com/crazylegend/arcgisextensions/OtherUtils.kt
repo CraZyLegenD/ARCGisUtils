@@ -2,6 +2,7 @@ package com.crazylegend.arcgisextensions
 
 import android.content.Context
 import com.esri.arcgisruntime.data.TileCache
+import com.esri.arcgisruntime.geometry.Geometry
 import com.esri.arcgisruntime.geometry.Point
 import com.esri.arcgisruntime.loadable.LoadStatus
 import com.esri.arcgisruntime.mapping.MobileMapPackage
@@ -29,7 +30,7 @@ val MobileMapPackage?.getFirstMap get() = this?.maps?.firstOrNull()
  * @receiver Graphic
  * @return Point
  */
-fun Graphic.asPoint() = geometry as Point
+fun Graphic?.asPoint() = this?.geometry as? Point
 
 /**
  * Converts the point to a stop
@@ -38,6 +39,8 @@ fun Graphic.asPoint() = geometry as Point
  */
 fun Point?.asStop(): Stop = Stop(this)
 
+
+fun Geometry?.asPoint() = this as? Point
 
 /**
  * Loads async mmpk and tpk altogether see [loadMMPk] and [loadTPK]
