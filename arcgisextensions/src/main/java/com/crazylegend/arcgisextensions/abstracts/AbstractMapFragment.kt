@@ -27,14 +27,13 @@ abstract class AbstractMapFragment(contentLayoutId: Int) : Fragment(contentLayou
         mapView.addOnTouchListener(requireContext()) { screenPoint, locationPoint ->
             handleMapTouch(screenPoint, locationPoint)
         }
-        loadMapPackage()
         createGraphicsOverlay()
     }
 
     fun setupLocationDisplay(requestCode: Int = 131, onPermissionGranted: () -> Unit = {},
                              onPermissionDenied: () -> Unit = {},
                              onShowRationale: () -> Unit = {},
-                             onPermissionDeniedPermanently: () -> Unit = {}) {
+                             onPermissionDeniedPermanently: () -> Unit = {}, callback:(LocationDisplay)->Unit = {}) {
         locationDisplay = mapView?.locationDisplay
         locationDisplay?.addDataSourceStatusChangedListener { dataSourceStatusChangedEvent ->
             if (dataSourceStatusChangedEvent.isStarted || dataSourceStatusChangedEvent.error == null) {
@@ -42,11 +41,11 @@ abstract class AbstractMapFragment(contentLayoutId: Int) : Fragment(contentLayou
             }
             checkLocationPermission(requestCode, onPermissionGranted, onPermissionDenied, onShowRationale, onPermissionDeniedPermanently)
         }
+        locationDisplay?.let { callback.invoke(it) }
         locationDisplay?.autoPanMode = LocationDisplay.AutoPanMode.COMPASS_NAVIGATION
         locationDisplay?.startAsync()
     }
 
-    abstract fun loadMapPackage()
 
     abstract fun handleMapTouch(screenPoint: Point, locationPoint: com.esri.arcgisruntime.geometry.Point)
 
