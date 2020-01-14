@@ -6,7 +6,6 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import com.crazylegend.arcgisextensions.addGraphicsOverlay
 import com.crazylegend.arcgisextensions.addOnTouchListener
-import com.crazylegend.arcgisextensions.checkLocationPermission
 import com.esri.arcgisruntime.mapping.ArcGISMap
 import com.esri.arcgisruntime.mapping.view.GraphicsOverlay
 import com.esri.arcgisruntime.mapping.view.LocationDisplay
@@ -30,6 +29,7 @@ abstract class AbstractMapFragment(contentLayoutId: Int) : Fragment(contentLayou
         createGraphicsOverlay()
     }
 
+/*
     fun setupLocationDisplay(requestCode: Int = 131, onPermissionGranted: () -> Unit = {},
                              onPermissionDenied: () -> Unit = {},
                              onShowRationale: () -> Unit = {},
@@ -45,6 +45,7 @@ abstract class AbstractMapFragment(contentLayoutId: Int) : Fragment(contentLayou
         locationDisplay?.autoPanMode = LocationDisplay.AutoPanMode.COMPASS_NAVIGATION
         locationDisplay?.startAsync()
     }
+*/
 
 
     abstract fun handleMapTouch(screenPoint: Point, locationPoint: com.esri.arcgisruntime.geometry.Point)
