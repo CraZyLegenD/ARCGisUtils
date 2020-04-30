@@ -12,7 +12,7 @@ val LocationDisplay.latNLong: Pair<Double, Double>
         val position = location.position
         val latitude = position.y
         val longitude = position.x
-        return Pair(latitude, longitude)
+        return latitude to longitude
     }
 
 
