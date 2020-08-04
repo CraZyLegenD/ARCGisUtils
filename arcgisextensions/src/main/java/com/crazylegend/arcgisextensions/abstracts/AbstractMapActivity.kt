@@ -1,17 +1,16 @@
 package com.crazylegend.arcgisextensions.abstracts
 
+import android.Manifest.permission.ACCESS_COARSE_LOCATION
+import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Point
 import android.os.Bundle
-import android.view.MenuItem
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.crazylegend.arcgisextensions.addGraphicsOverlay
 import com.crazylegend.arcgisextensions.addOnTouchListener
-import com.crazylegend.arcgisextensions.checkLocationPermission
-import com.crazylegend.kotlinextensions.context.showBackButton
 import com.crazylegend.kotlinextensions.locale.LocaleHelper
-import com.esri.arcgisruntime.internal.jni.it
 import com.esri.arcgisruntime.mapping.ArcGISMap
 import com.esri.arcgisruntime.mapping.view.GraphicsOverlay
 import com.esri.arcgisruntime.mapping.view.LocationDisplay
@@ -39,21 +38,27 @@ abstract class AbstractMapActivity(contentLayoutId: Int) : AppCompatActivity(con
         createGraphicsOverlay()
     }
 
-    fun setupLocationDisplay(requestCode: Int = 131, onPermissionGranted: () -> Unit = {},
-                             onPermissionDenied: () -> Unit = {},
-                             onShowRationale: () -> Unit = {},
-                             onPermissionDeniedPermanently: () -> Unit = {}) {
+    fun setupLocationDisplay(onPermissionDenied: () -> Unit = {},onPermissionGranted: () -> Unit = {}) {
         locationDisplay = mapView.locationDisplay
         locationDisplay?.addDataSourceStatusChangedListener { dataSourceStatusChangedEvent ->
             if (dataSourceStatusChangedEvent.isStarted || dataSourceStatusChangedEvent.error == null) {
                 return@addDataSourceStatusChangedListener
             }
-            checkLocationPermission(requestCode, onPermissionGranted, onPermissionDenied, onShowRationale, onPermissionDeniedPermanently)
+            askForMultiplePermissions(onPermissionDenied, onPermissionGranted).launch(arrayOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION))
         }
         locationDisplay?.autoPanMode = LocationDisplay.AutoPanMode.COMPASS_NAVIGATION
         locationDisplay?.startAsync()
     }
 
+    fun askForMultiplePermissions(onDenied: () -> Unit = {}, onPermissionsGranted: () -> Unit = {}) =
+            registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { result ->
+                val granted = result.map { it.value }.filter { it == false }
+                if (granted.isNullOrEmpty()) {
+                    onPermissionsGranted()
+                } else {
+                    onDenied()
+                }
+            }
 
     abstract fun loadMapPackage()
 
@@ -91,18 +96,5 @@ abstract class AbstractMapActivity(contentLayoutId: Int) : AppCompatActivity(con
     override fun onDestroy() {
         super.onDestroy()
         mapView.dispose()
-    }
-
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            android.R.id.home -> {
-                finish()
-                true
-            }
-            else -> {
-                return super.onOptionsItemSelected(item)
-            }
-        }
     }
 }

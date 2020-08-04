@@ -1,6 +1,7 @@
 package com.crazylegend.arcgisextensions
 
 import android.content.Context
+import android.location.Location
 import com.crazylegend.kotlinextensions.exhaustive
 import com.crazylegend.kotlinextensions.log.debug
 import com.crazylegend.kotlinextensions.tryOrNull
@@ -97,7 +98,7 @@ fun MapView?.getTolerance(tolerance: Double = 10.0): Double {
 }
 
 
-fun Loadable?.loadDSL(isDebug: Boolean = false, onFailedLoading: () -> Unit = {}, onLoading: () -> Unit = {}, onSuccessfulLoading: () -> Unit = {}): Loadable? {
+inline fun Loadable?.loadDSL(isDebug: Boolean = false, crossinline onFailedLoading: () -> Unit = {}, crossinline onLoading: () -> Unit = {}, crossinline onSuccessfulLoading: () -> Unit = {}): Loadable? {
     if (this == null) return null
 
     addDoneLoadingListener {
@@ -158,7 +159,7 @@ fun generateQueryWithGeometry(toleranceEnvelope: Envelope): QueryParameters {
 
 val queryEverything get() = esriQuery { whereClause = "1=1" }
 
-fun <V> ListenableFuture<V>?.loadDSL(onSuccessfulLoad: (V?) -> Unit): ListenableFuture<V>? {
+inline fun <V> ListenableFuture<V>?.loadDSL(crossinline onSuccessfulLoad: (V?) -> Unit): ListenableFuture<V>? {
     this?.addDoneListener {
         val result = tryOrNull {
             get()
@@ -167,3 +168,9 @@ fun <V> ListenableFuture<V>?.loadDSL(onSuccessfulLoad: (V?) -> Unit): Listenable
     }
     return this
 }
+
+fun Point.toLocation(provider:String = "") =
+        Location(provider).apply {
+            latitude = y
+            longitude = x
+        }
