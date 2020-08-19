@@ -15,3 +15,11 @@ fun GraphicsOverlay?.clearGraphics(){
     this?:return
     graphics.clear()
 }
+
+fun GraphicsOverlay?.unSelectAllGraphics() {
+    this?.graphics?.asSequence()?.forEach { it.isSelected = false }
+}
+
+fun GraphicsOverlay?.selectAllGraphics() {
+    this?.graphics?.asSequence()?.forEach { it.isSelected = true }
+}
