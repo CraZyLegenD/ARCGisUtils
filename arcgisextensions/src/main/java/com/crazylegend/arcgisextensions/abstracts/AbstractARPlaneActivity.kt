@@ -4,20 +4,16 @@ import android.Manifest.permission.CAMERA
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import com.crazylegend.kotlinextensions.context.showBackButton
 import com.esri.arcgisruntime.toolkit.ar.ArcGISArView
 
 
 abstract class AbstractARPlaneActivity(contentLayoutId: Int) : AppCompatActivity(contentLayoutId) {
 
     abstract val arView: ArcGISArView
-    abstract val showBackButton: Boolean
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (showBackButton)
-            showBackButton()
 
         registerForActivityResult(ActivityResultContracts.RequestPermission()) {
             when (it) {

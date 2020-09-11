@@ -2,7 +2,6 @@ package com.crazylegend.arcgisextensions
 
 import android.content.Context
 import android.graphics.Color
-import com.crazylegend.kotlinextensions.tryOrElse
 import com.esri.arcgisruntime.data.TransportationNetworkDataset
 import com.esri.arcgisruntime.loadable.LoadStatus
 import com.esri.arcgisruntime.mapping.view.Graphic
@@ -112,6 +111,8 @@ fun RouteTask?.solveRoute(routeParameters: RouteParameters?, graphicsOverlay: Gr
     }
 }
 
+internal inline fun <T> tryOrElse(defaultValue: T, block: () -> T): T = tryOrNull(block)
+        ?: defaultValue
 /**
  * Directly converts the transportation network data set
  * @receiver TransportationNetworkDataset?

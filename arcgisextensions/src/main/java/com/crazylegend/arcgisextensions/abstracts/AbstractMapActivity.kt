@@ -2,7 +2,6 @@ package com.crazylegend.arcgisextensions.abstracts
 
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
-import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Point
 import android.os.Bundle
@@ -10,7 +9,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.crazylegend.arcgisextensions.addGraphicsOverlay
 import com.crazylegend.arcgisextensions.addOnTouchListener
-import com.crazylegend.kotlinextensions.locale.LocaleHelper
 import com.esri.arcgisruntime.mapping.ArcGISMap
 import com.esri.arcgisruntime.mapping.view.GraphicsOverlay
 import com.esri.arcgisruntime.mapping.view.LocationDisplay
@@ -69,9 +67,6 @@ abstract class AbstractMapActivity(contentLayoutId: Int) : AppCompatActivity(con
         mapView.addGraphicsOverlay(graphicsOverlay)
     }
 
-    override fun attachBaseContext(newBase: Context?) {
-        super.attachBaseContext(newBase?.let { LocaleHelper.onAttach(it) })
-    }
 
     override fun applyOverrideConfiguration(overrideConfiguration: Configuration?) {
         if (overrideConfiguration != null) {

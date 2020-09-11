@@ -2,9 +2,6 @@ package com.crazylegend.arcgisextensions
 
 import android.content.Context
 import android.location.Location
-import com.crazylegend.kotlinextensions.exhaustive
-import com.crazylegend.kotlinextensions.log.debug
-import com.crazylegend.kotlinextensions.tryOrNull
 import com.esri.arcgisruntime.concurrent.ListenableFuture
 import com.esri.arcgisruntime.data.QueryParameters
 import com.esri.arcgisruntime.data.ServiceFeatureTable
@@ -19,6 +16,7 @@ import com.esri.arcgisruntime.mapping.MobileMapPackage
 import com.esri.arcgisruntime.mapping.view.Graphic
 import com.esri.arcgisruntime.mapping.view.MapView
 import com.esri.arcgisruntime.tasks.networkanalysis.Stop
+import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -105,36 +103,21 @@ inline fun Loadable?.loadDSL(isDebug: Boolean = false, crossinline onFailedLoadi
         when (loadStatus) {
             LoadStatus.NOT_LOADED -> {
                 onFailedLoading()
-                onDebug(isDebug) {
-                    debug("NOT_LOADED")
-                }
             }
             LoadStatus.LOADING -> {
                 onLoading()
-                onDebug(isDebug) {
-                    debug("LOADING")
-                }
             }
             LoadStatus.LOADED -> {
                 onSuccessfulLoading()
-                onDebug(isDebug) {
-                    debug("LOADED")
-                }
             }
             LoadStatus.FAILED_TO_LOAD -> {
                 onFailedLoading()
-                onDebug(isDebug) {
-                    debug("FAILED_TO_LOAD ${loadError.errorCode} ${loadError.additionalMessage} ${loadError.localizedMessage}")
-                }
             }
 
             null -> {
                 onFailedLoading()
-                onDebug(isDebug) {
-                    debug("null returned when loading")
-                }
             }
-        }.exhaustive
+        }
         loadError?.cause?.printStackTrace()
     }
     loadAsync()
@@ -159,7 +142,7 @@ fun generateQueryWithGeometry(toleranceEnvelope: Envelope): QueryParameters {
 
 val queryEverything get() = esriQuery { whereClause = "1=1" }
 
-inline fun <V> ListenableFuture<V>?.loadDSL(crossinline onSuccessfulLoad: (V?) -> Unit): ListenableFuture<V>? {
+fun <V> ListenableFuture<V>?.loadDSL(onSuccessfulLoad: (V?) -> Unit): ListenableFuture<V>? {
     this?.addDoneListener {
         val result = tryOrNull {
             get()
@@ -174,3 +157,9 @@ fun Point.toLocation(provider:String = "") =
             latitude = y
             longitude = x
         }
+
+internal inline fun <T> tryOrNull(block: () -> T): T? = try {
+    block()
+} catch (e: Exception) {
+    null
+}
